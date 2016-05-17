@@ -18,6 +18,12 @@ module Excon
       assert_equal 200, conn.get.status
     end
 
+    def test_templated_uri_with_optional_query_parameters
+      conn = Excon.new('http://www.example.com/{?uid}')
+
+      assert_equal '/', conn.data[:path]
+    end
+
     def teardown
       Excon.stubs.clear
     end

@@ -11,8 +11,8 @@ module Excon
   #
   module Addressable
     def new(url, params = {})
-      if (variables = params.delete(:expand))
-        url = ::Addressable::Template.new(url).expand(variables)
+      if (template = ::Addressable::Template.new(url)) && template.variables.any?
+        url = template.expand(params.delete(:expand).to_h)
       end
 
       super
