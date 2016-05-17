@@ -9,7 +9,8 @@ module Excon
   class AddressableTest < Minitest::Test
     def setup
       Excon.defaults[:mock] = true
-      Excon.stub({}, status: 200)
+      Excon.stub({ path: '/hello' }, body: 'world')
+      Excon.stub({ path: '/world' }, body: 'universe')
     end
 
     def test_expand_templated_uri
@@ -23,6 +24,12 @@ module Excon
       conn = Excon.new('http://www.example.com/{?uid}')
 
       assert_equal '/', conn.data[:path]
+    end
+
+    def test_templated_uri_with_excon_shortcut_method
+      response = Excon.get('http://www.example.com/{uid}', expand: { uid: 'world' })
+
+      assert_equal 'universe', response.body
     end
 
     def teardown
