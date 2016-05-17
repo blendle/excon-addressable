@@ -1,4 +1,4 @@
-# Excon::Addressable
+# Excon::Addressable [![wercker status](https://app.wercker.com/status/3868c162aa140566b830f517c45d528a/s/master "wercker status")](https://app.wercker.com/project/bykey/3868c162aa140566b830f517c45d528a)
 
 Sets [Addressable][] as the default URI parser. Supports parsing [templated uris][].
 
