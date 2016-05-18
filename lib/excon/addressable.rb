@@ -17,12 +17,7 @@ module Excon
 
         if (template = ::Addressable::Template.new(url)) && template.variables.any?
           uri = template.expand(datum[:expand].to_h)
-
-          datum[:scheme] = uri.scheme
-          datum[:host]   = uri.host
-          datum[:port]   = uri.port
-          datum[:path]   = uri.path
-          datum[:query]  = uri.query
+          datum.merge!(uri.to_hash)
         end
 
         super
