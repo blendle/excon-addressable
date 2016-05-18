@@ -9,25 +9,41 @@ module Excon
   class AddressableTest < Minitest::Test
     def setup
       Excon.defaults[:mock] = true
+      Excon.stub({ path: '/' }, body: 'index')
       Excon.stub({ path: '/hello' }, body: 'world')
       Excon.stub({ path: '/world' }, body: 'universe')
     end
 
     def test_expand_templated_uri
-      conn = Excon.new('http://www.example.com/{uid}', expand: { uid: 'hello' })
+      connection = Excon.new('http://www.example.com/{uid}', expand: { uid: 'hello' })
+      response   = connection.get
 
-      assert_equal '/hello', conn.data[:path]
-      assert_equal 200, conn.get.status
+      assert_equal 'world', response.body
     end
 
     def test_templated_uri_with_optional_query_parameters
-      conn = Excon.new('http://www.example.com/{?uid}')
+      connection = Excon.new('http://www.example.com/{?uid}')
+      response   = connection.get
 
-      assert_equal '/', conn.data[:path]
+      assert_equal 'index', response.body
     end
 
     def test_templated_uri_with_excon_shortcut_method
       response = Excon.get('http://www.example.com/{uid}', expand: { uid: 'world' })
+
+      assert_equal 'universe', response.body
+    end
+
+    def test_templated_uri_with_mixed_connection_and_get
+      connection = Excon.new('http://www.example.com/{uid}')
+      response   = connection.get(expand: { uid: 'world' })
+
+      assert_equal 'universe', response.body
+    end
+
+    def test_templated_uri_overriding_variables
+      connection = Excon.new('http://www.example.com/{uid}', expand: { uid: 'hello' })
+      response   = connection.get(expand: { uid: 'world' })
 
       assert_equal 'universe', response.body
     end

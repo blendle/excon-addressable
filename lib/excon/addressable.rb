@@ -7,17 +7,29 @@ Excon.defaults[:uri_parser] = Addressable::URI
 
 # :nodoc:
 module Excon
-  # Addressable addition to Excon.
-  #
-  module Addressable
-    def new(url, params = {})
-      if (template = ::Addressable::Template.new(url)) && template.variables.any?
-        url = template.expand(params.delete(:expand).to_h)
+  # :nodoc:
+  class Connection
+    # Addressable addition to Excon.
+    #
+    module Addressable
+      def request(params = {}, &block)
+        expand = @data[:expand].to_h.merge(params[:expand].to_h)
+        url = ::Addressable::URI.new(@data)
+
+        if (template = ::Addressable::Template.new(url)) && template.variables.any?
+          uri = template.expand(expand)
+
+          @data[:scheme] = uri.scheme
+          @data[:host]   = uri.host
+          @data[:port]   = uri.port
+          @data[:path]   = uri.path
+          @data[:query]  = uri.query
+        end
+
+        super
       end
-
-      super
     end
-  end
 
-  singleton_class.prepend Addressable
+    prepend Addressable
+  end
 end
