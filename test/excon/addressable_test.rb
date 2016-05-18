@@ -8,9 +8,11 @@ module Excon
   #
   class AddressableTest < Minitest::Test
     def setup
+      Excon.defaults[:middlewares].unshift(Excon::Addressable::Middleware)
       Excon.defaults[:mock] = true
       Excon.stub({ path: '/' }, body: 'index')
       Excon.stub({ path: '/hello' }, body: 'world')
+      Excon.stub({ path: '/hello', query: 'message=world' }, body: 'hi!')
       Excon.stub({ path: '/world' }, body: 'universe')
     end
 
@@ -42,10 +44,10 @@ module Excon
     end
 
     def test_templated_uri_overriding_variables
-      connection = Excon.new('http://www.example.com/{uid}', expand: { uid: 'hello' })
-      response   = connection.get(expand: { uid: 'world' })
+      connection = Excon.new('http://www.example.com/{uid}{?message}', expand: { uid: 'goodbye' })
+      response   = connection.get(expand: { uid: 'hello', message: 'world' })
 
-      assert_equal 'universe', response.body
+      assert_equal 'hi!', response.body
     end
 
     def teardown

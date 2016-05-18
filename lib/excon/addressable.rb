@@ -5,31 +5,28 @@ require 'excon/addressable/version'
 
 Excon.defaults[:uri_parser] = Addressable::URI
 
-# :nodoc:
 module Excon
-  # :nodoc:
-  class Connection
-    # Addressable addition to Excon.
+  module Addressable
+    # Middleware
     #
-    module Addressable
-      def request(params = {}, &block)
-        expand = @data[:expand].to_h.merge(params[:expand].to_h)
-        url = ::Addressable::URI.new(@data)
+    # Parses a Templated URI string and merges it with the provided variables.
+    #
+    class Middleware < Excon::Middleware::Base
+      def request_call(datum)
+        url = ::Addressable::URI.new(datum)
 
         if (template = ::Addressable::Template.new(url)) && template.variables.any?
-          uri = template.expand(expand)
+          uri = template.expand(datum[:expand].to_h)
 
-          @data[:scheme] = uri.scheme
-          @data[:host]   = uri.host
-          @data[:port]   = uri.port
-          @data[:path]   = uri.path
-          @data[:query]  = uri.query
+          datum[:scheme] = uri.scheme
+          datum[:host]   = uri.host
+          datum[:port]   = uri.port
+          datum[:path]   = uri.path
+          datum[:query]  = uri.query
         end
 
         super
       end
     end
-
-    prepend Addressable
   end
 end
