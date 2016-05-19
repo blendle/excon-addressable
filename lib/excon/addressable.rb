@@ -1,5 +1,6 @@
 # frozen_string_literal: true
-require 'addressable'
+require 'addressable/template'
+require 'addressable/uri'
 require 'excon'
 require 'excon/addressable/version'
 
