@@ -5,8 +5,6 @@ require 'excon'
 require 'excon/addressable/parser'
 require 'excon/addressable/version'
 
-Excon.defaults[:uri_parser] = Excon::Addressable::Parser
-
 module Excon
   module Addressable
     # Middleware
@@ -15,8 +13,9 @@ module Excon
     #
     class Middleware < Excon::Middleware::Base
       def request_call(datum)
-        url = ::Addressable::URI.new(datum)
+        datum[:uri_parser] = Parser
 
+        url = ::Addressable::URI.new(datum)
         if (template = ::Addressable::Template.new(url)) && template.variables.any?
           uri = template.expand(datum[:expand].to_h)
           datum.merge!(uri.to_hash)
