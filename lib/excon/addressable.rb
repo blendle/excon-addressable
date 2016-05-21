@@ -2,9 +2,10 @@
 require 'addressable/template'
 require 'addressable/uri'
 require 'excon'
+require 'excon/addressable/parser'
 require 'excon/addressable/version'
 
-Excon.defaults[:uri_parser] = Addressable::URI
+Excon.defaults[:uri_parser] = Excon::Addressable::Parser
 
 module Excon
   module Addressable
