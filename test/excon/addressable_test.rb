@@ -13,6 +13,7 @@ module Excon
       Excon.stub({ path: '/' }, body: 'index')
       Excon.stub({ path: '/hello' }, body: 'world')
       Excon.stub({ path: '/hello', query: 'message=world' }, body: 'hi!')
+      Excon.stub({ path: '/hello', query: 'a=b&c=d' }, body: 'earth')
       Excon.stub({ path: '/world' }, body: 'universe')
     end
 
@@ -48,6 +49,24 @@ module Excon
       response   = connection.get(expand: { uid: 'hello', message: 'world' })
 
       assert_equal 'hi!', response.body
+    end
+
+    def test_uri_with_full_uri
+      response = Excon.get('http://www.example.com/hello?message=world')
+
+      assert_equal 'hi!', response.body
+    end
+
+    def test_uri_with_query
+      response = Excon.get('http://www.example.com/hello', query: { message: 'world' })
+
+      assert_equal 'hi!', response.body
+    end
+
+    def test_uri_with_multiple_queries
+      response = Excon.get('https://www.example.com/hello', query: { a: 'b', c: 'd' })
+
+      assert_equal 'earth', response.body
     end
 
     def teardown
