@@ -8,7 +8,15 @@ require 'excon/addressable/version'
 
 Excon.defaults[:uri_parser] = Excon::Addressable::Parser
 
+# Excon
+#
+# We inject the `expand` key to the allowed lists of keys to be used when
+# creating a request, or connection object. Excon does not enforce this yet, but
+# it does print a warning, so this makes things future-proof.
 module Excon
+  VALID_REQUEST_KEYS << :expand
+  VALID_CONNECTION_KEYS << :expand
+
   module Addressable
     # Middleware
     #
