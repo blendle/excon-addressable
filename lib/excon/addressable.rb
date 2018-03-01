@@ -15,6 +15,11 @@ module Excon
     #
     class Middleware < Excon::Middleware::Base
       def request_call(datum)
+        # we need to convert a query hash (or string) to the proper format for
+        # Addressable to work with. We also need to remove the `?` character
+        # that Excon prepends to the final query string.
+        datum[:query] = Excon::Utils.query_string(datum)[1..-1]
+
         url = ::Addressable::URI.new(datum)
 
         if (template = ::Addressable::Template.new(url)) && template.variables.any?
