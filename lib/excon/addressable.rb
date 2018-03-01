@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 require 'addressable/template'
 require 'addressable/uri'
 require 'excon'
