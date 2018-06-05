@@ -16,8 +16,8 @@ module Excon
       Excon.stub({ path: '/hello', query: 'message=world' }, body: 'hi!')
       Excon.stub({ path: '/hello', query: 'a=b&c=d' }, body: 'earth')
       Excon.stub({ path: '/world' }, body: 'universe')
-      Excon.stub({ path: '/foo' }, { headers: { 'Location' => '/bar' }, body: 'no', status: 301 })
-      Excon.stub({ path: '/bar' }, { body: 'ok!', status: 200 })
+      Excon.stub({ path: '/foo' }, headers: { 'Location' => '/bar' }, body: 'no', status: 301)
+      Excon.stub({ path: '/bar' }, body: 'ok!', status: 200)
     end
 
     def test_expand_templated_uri
