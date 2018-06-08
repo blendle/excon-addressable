@@ -16,6 +16,8 @@ module Excon
       Excon.stub({ path: '/hello', query: 'message=world' }, body: 'hi!')
       Excon.stub({ path: '/hello', query: 'a=b&c=d' }, body: 'earth')
       Excon.stub({ path: '/world' }, body: 'universe')
+      Excon.stub({ path: '/foo' }, headers: { 'Location' => '/bar' }, body: 'no', status: 301)
+      Excon.stub({ path: '/bar' }, body: 'ok!', status: 200)
     end
 
     def test_expand_templated_uri
@@ -68,6 +70,15 @@ module Excon
       response = Excon.get('https://www.example.com/hello', query: { a: 'b', c: 'd' })
 
       assert_equal 'earth', response.body
+    end
+
+    def test_uri_with_redirect
+      response = Excon.get(
+        'https://www.example.com/foo',
+        middlewares: Excon.defaults[:middlewares] + [Excon::Middleware::RedirectFollower]
+      )
+
+      assert_equal 'ok!', response.body
     end
 
     def teardown

@@ -9,9 +9,9 @@ module Excon
     # @see : https://github.com/excon/excon/issues/384#issuecomment-42645517
     # @see : https://github.com/excon/excon/issues/384#issuecomment-362618298
     #
-    class Parser
+    class Parser < ::Addressable::URI
       def self.parse(url)
-        uri = ::Addressable::URI.parse(url)
+        uri = super
         uri.port = uri.inferred_port unless uri.port
         uri
       end
